@@ -16,14 +16,14 @@ local plugins = {
     end,
   },
   {
-    "simrat39/rust-tools.nvim",
+    "mrcjkb/rustaceanvim",
+    version = "^4",
     ft = "rust",
-    dependencies = "neovim/nvim-lspconfig",
     opts = function()
-      return require "custom.configs.rust-tools"
+      return require "custom.configs.rustaceanvim"
     end,
     config = function(_, opts)
-      require("rust-tools").setup(opts)
+      vim.g.rustaceanvim = opts
     end,
   },
   {
@@ -114,6 +114,7 @@ local plugins = {
         "blue",
         "debugpy",
         "rust-analyzer",
+        "codelldb",
       },
     },
   },
