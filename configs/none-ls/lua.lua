@@ -3,10 +3,7 @@ local none_ls = require "null-ls"
 
 local opts = {
   sources = {
-    none_ls.builtins.formatting.blue,
-    none_ls.builtins.formatting.isort,
-    none_ls.builtins.diagnostics.mypy,
-    none_ls.builtins.diagnostics.ruff,
+    none_ls.builtins.formatting.stylua,
   },
   on_attach = function(client, bufnr)
     if client.supports_method "textDocument/formatting" then

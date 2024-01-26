@@ -1,9 +1,49 @@
 local plugins = {
   {
-    "nvimtools/none-ls.nvim",
-    ft = {"python"},
+    "saecki/crates.nvim",
+    ft = { "rust", "toml" },
+    config = function(_, opts)
+      local crates = require "crates"
+      crates.setup(opts)
+      crates.show()
+    end,
+  },
+  {
+    "rust-lang/rust.vim",
+    ft = "rust",
+    init = function()
+      vim.g.rustfmt_autosave = 1
+    end,
+  },
+  {
+    "simrat39/rust-tools.nvim",
+    ft = "rust",
+    dependencies = "neovim/nvim-lspconfig",
     opts = function()
-      return require "custom.configs.none-ls.python"
+      return require "custom.configs.rust-tools"
+    end,
+    config = function(_, opts)
+      require("rust-tools").setup(opts)
+    end,
+  },
+  {
+    "hrsh7th/nvim-cmp",
+    opts = function()
+      local M = require "plugins.configs.cmp"
+      table.insert(M.sources, { name = "crates" })
+      return M
+    end,
+  },
+  {
+    "nvimtools/none-ls.nvim",
+    ft = { "python", "lua" },
+    opts = function()
+      local filetype = vim.api.nvim_buf_get_option(0, "filetype")
+      if filetype == "python" then
+        return require "custom.configs.none-ls.python"
+      elseif filetype == "lua" then
+        return require "custom.configs.none-ls.lua"
+      end
     end,
   },
   {
@@ -16,28 +56,28 @@ local plugins = {
   {
     "rcarriga/nvim-dap-ui",
     dependencies = "mfussenegger/nvim-dap",
-    config = function ()
-      local dap = require("dap")
-      local dapui = require("dapui")
+    config = function()
+      local dap = require "dap"
+      local dapui = require "dapui"
       dapui.setup()
-      dap.listeners.after.event_initialized["dapui_config"] = function ()
+      dap.listeners.after.event_initialized["dapui_config"] = function()
         dapui.open()
       end
-      dap.listeners.before.event_terminated["dapui_config"] = function ()
+      dap.listeners.before.event_terminated["dapui_config"] = function()
         dapui.close()
       end
-      dap.listeners.before.event_exited["dapui_config"] = function ()
+      dap.listeners.before.event_exited["dapui_config"] = function()
         dapui.close()
       end
     end,
   },
   {
     "mfussenegger/nvim-dap",
-    config = function ()
-      require("core.utils").load_mappings("dap")
-      vim.fn.sign_define('DapBreakpoint', { text ='', texthl ='', linehl ='', numhl =''})
-      vim.fn.sign_define('DapStopped',{ text ='▶️', texthl ='', linehl ='', numhl =''})
-    end
+    config = function()
+      require("core.utils").load_mappings "dap"
+      vim.fn.sign_define("DapBreakpoint", { text = "", texthl = "", linehl = "", numhl = "" })
+      vim.fn.sign_define("DapStopped", { text = "▶️", texthl = "", linehl = "", numhl = "" })
+    end,
   },
   {
     "mfussenegger/nvim-dap-python",
@@ -45,34 +85,35 @@ local plugins = {
     dependencies = {
       "mfussenegger/nvim-dap",
       "rcarriga/nvim-dap-ui",
-
     },
-    config = function ()
+    config = function()
       local path = "~/AppData/Local/nvim-data/mason/packages/debugpy/venv/Scripts/python.exe"
       require("dap-python").setup(path)
-      require("core.utils").load_mappings("dap_python")
-    end
+      require("core.utils").load_mappings "dap_python"
+    end,
   },
   {
     "NvChad/nvterm",
-    config = function ()
-      require("nvterm").setup({
+    config = function()
+      require("nvterm").setup {
         terminals = {
           shell = "pwsh",
         },
-      })
-    end
+      }
+    end,
   },
   {
     "williamboman/mason.nvim",
     opts = {
       ensure_installed = {
+        "stylua",
         "pyright",
         "isort",
         "mypy",
         "ruff",
         "blue",
         "debugpy",
+        "rust-analyzer",
       },
     },
   },
